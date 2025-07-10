@@ -1,0 +1,28 @@
+:root,
+html {
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.vertical-product-divider {
+    width: 0px;
+    border: 2px solid #1677ff;
+    border-radius: 4px;
+    margin-right: 5px;
+}
+
+[data-color-mode='dark'] .wmde-markdown,
+.wmde-markdown-var {
+    color-scheme: dark;
+    --color-canvas-default: #141414;
+    /* Dark mode color */
+
+
+}
+
+.red-row {
+    background-color: #BF0436;
+}

@@ -1,0 +1,1998 @@
+openapi: 3.0.0
+
+info:
+  version: 1.4.5
+  title: APP
+  description: APP API
+  contact:
+    email: matoslarissa31@gmail.com
+
+servers:
+  - url: 'http://localhost:8000/api'
+    description: Local development server
+  - url: 'http://app.local/api'
+    description: Local Larissa
+
+tags:
+  - name: session
+    description: Operations about current session
+  - name: register
+    description: Operations about registration
+  - name: usermgmt
+    description: Operations about user management
+  - name: articles
+    description:  Operations about kb articles
+
+paths:
+  /session/fl:
+    post:
+      tags:
+        - session
+      summary: Get user token by first login token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+                  description: the first login token
+                  example: f331c9f9ce8246f7ab59680c284fb1dd
+      responses:
+        200:
+          description: The token as object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: ba36d0bc86694a2a92c219fbb7e16485
+        401:
+          $ref: '#/components/responses/401'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+
+  /session/login:
+    post:
+      tags:
+        - session
+      summary: Make login request and return API token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  description: the e-mail of user to authenticate for
+                  example: foo@example.org
+                password:
+                  type: string
+                  description: the password of user to authenticate for
+                  example: password
+      responses:
+        200:
+          description: The token as object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: ba36d0bc86694a2a92c219fbb7e16485
+        401:
+          $ref: '#/components/responses/401'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+
+  /session/menu:
+    get:
+      tags:
+        - session
+      summary: Get current session main menu
+      responses:
+        200:
+          description: The main menu data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/menuList'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+
+  /session/sprite:
+    get:
+      tags:
+        - session
+      summary: Get support users sprite avatars
+      responses:
+        200:
+          description: The sprite avatar image in base64 format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sprite:
+                    type: string
+                    example:
+                      "iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV/TSqVUHexQxCFDdbKLijjWKhShQqgVWnUwufQLmrQkKS6OgmvBwY/FqoOLs64OroIg+AHi6uKk6CIl/i8ptIjx4Lgf7+497t4BQqvKNDOQADTdMjKppJjLr4rBV4QQQBhRDMrMrM9JUhqe4+sePr7exXmW97k/x4BaMBngE4kTrG5YxBvEM5tWnfM+cYSVZZX4nHjCoAsSP3JdcfmNc8lhgWdGjGxmnjhCLJZ6WOlhVjY04mnimKrplC/kXFY5b3HWqg3WuSd/YbigryxzneYoUljEEiSIUNBABVVYiNOqk2IiQ/tJD/+I45fIpZCrAkaOBdSgQXb84H/wu1uzODXpJoWTQN+LbX+MAcFdoN207e9j226fAP5n4Erv+mstYPaT9GZXix0BQ9vAxXVXU/aAyx0g+lSXDdmR/DSFYhF4P6NvygPDt0Boze2ts4/TByBLXaVvgINDYLxE2ese7+7v7e3fM53+fgA7LHKQs+mCOQAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAAuIwAALiMBeKU/dgAAAAd0SU1FB+cKBAwYLlWQYp4AAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAVklEQVR42u3BMQEAAADCoPVPbQwfoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOBvAI8AAYr5gj4AAAAASUVORK5CYII="
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+
+  /session/user:
+    get:
+      tags:
+        - session
+      summary: Get current session user
+      responses:
+        200:
+          description: The current user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+    put:
+      tags:
+        - session
+      summary: Update user name, password and/or avatar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  example: myNewPassword
+                name:
+                  type: string
+                  example: my new name
+                avatar:
+                  type: string
+                  format: byte
+            examples:
+              change password:
+                value:
+                  password: myNewPassword
+              change name:
+                value:
+                  name: my new name
+              change avatar:
+                value:
+                  avatar: "/9j/4AAQSkZJRgABAQEBLAEsAAD//gATQ3JlYXRlZCB3aXRoIEdJTVD/4gKwSUNDX1BST0ZJTEUAAQEAAAKgbGNtcwRAAABtbnRyUkdCIFhZWiAH5wACAAcAFAAMAAZhY3NwQVBQTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWxjbXMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA1kZXNjAAABIAAAAEBjcHJ0AAABYAAAADZ3dHB0AAABmAAAABRjaGFkAAABrAAAACxyWFlaAAAB2AAAABRiWFlaAAAB7AAAABRnWFlaAAACAAAAABRyVFJDAAACFAAAACBnVFJDAAACFAAAACBiVFJDAAACFAAAACBjaHJtAAACNAAAACRkbW5kAAACWAAAACRkbWRkAAACfAAAACRtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACQAAAAcAEcASQBNAFAAIABiAHUAaQBsAHQALQBpAG4AIABzAFIARwBCbWx1YwAAAAAAAAABAAAADGVuVVMAAAAaAAAAHABQAHUAYgBsAGkAYwAgAEQAbwBtAGEAaQBuAABYWVogAAAAAAAA9tYAAQAAAADTLXNmMzIAAAAAAAEMQgAABd7///MlAAAHkwAA/ZD///uh///9ogAAA9wAAMBuWFlaIAAAAAAAAG+gAAA49QAAA5BYWVogAAAAAAAAJJ8AAA+EAAC2xFhZWiAAAAAAAABilwAAt4cAABjZcGFyYQAAAAAAAwAAAAJmZgAA8qcAAA1ZAAAT0AAACltjaHJtAAAAAAADAAAAAKPXAABUfAAATM0AAJmaAAAmZwAAD1xtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAEcASQBNAFBtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEL/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wgARCAABAAEDAREAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQBAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhADEAAAAX8P/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABBQJ//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPwF//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPwF//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQAGPwJ//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPyF//9oADAMBAAIAAwAAABAf/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPxB//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPxB//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxB//9k="
+
+      responses:
+        200:
+          description: Ok response
+        422:
+          $ref: '#/components/responses/422'
+        500:
+          $ref: '#/components/responses/500'
+
+  /session/user/theme:
+    put:
+      tags:
+        - session
+      summary: Set theme preference
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                alias:
+                  type: string
+                  example: my new alias
+            examples:
+              default:
+                value:
+                  theme: default
+              dark:
+                value:
+                  theme: dark
+      responses:
+        200:
+          description: The current user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+
+  /session/authcode:
+    post:
+      tags:
+        - session
+      summary: Post auth code to allow login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - authcode
+              properties:
+                authcode:
+                  type: string
+                  description: the auth code
+                  example: 447700
+      responses:
+        200:
+          description: The auth code was correct
+          content:
+            application/json:
+              schema:
+                type: object
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error401'
+        422:
+          description: The auth code was incorrect
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error422'
+        404:
+          description: Item not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error404'
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error500'
+
+  /session/authcode-resend:
+    post:
+      tags:
+        - session
+      summary: Resend auth code via email
+      responses:
+        200:
+          description: The auth code was sent
+          content:
+            application/json:
+              schema:
+                type: object
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error401'
+        404:
+          description: Item not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error404'
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error500'
+
+  /register:
+    post:
+      tags:
+        - register
+      summary: Register new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+                - password_confirmation
+              properties:
+                name:
+                  type: string
+                  description: the user name
+                  example: Foo Bar Baz
+                email:
+                  type: string
+                  description: the e-mail of user to register for
+                  example: foo@example.org
+                password:
+                  type: string
+                  description: the password of user to register for
+                  example: password
+                password_confirmation:
+                  type: string
+                  description: the password confirmation of user to register for
+                  example: password
+            examples:
+              create a user:
+                value:
+                  name: Foo Bar Baz
+                  email: root@example.com
+                  password: mypassword
+                  password_confirmation: mypassword
+      responses:
+        200:
+          description: The token as object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: ba36d0bc86694a2a92c219fbb7e16485
+        401:
+          $ref: '#/components/responses/401'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+
+  /forgot-password:
+    post:
+      tags:
+        - register
+      summary: Request password reset link via e-mail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  description: the user email to send the reset link
+                  example: foo@example.com
+      responses:
+        200:
+          description: The password reset link was sent
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+
+  /user:
+    get:
+      parameters:
+        - name: level
+          description: Filter by level (can be number level or "collaborators")
+          in: query
+          required: false
+          schema:
+            type: string
+            format: nullable
+            enum: [1, collaborators]
+        - $ref: '#/components/parameters/inactive'
+        - $ref: '#/components/parameters/search'
+      tags:
+        - usermgmt
+      summary: Get users
+      responses:
+        200:
+          description: The users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userList'
+        401:
+          $ref: '#/components/responses/401'
+        500:
+          $ref: '#/components/responses/500'
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - entity
+                - name
+                - email
+                - password
+                - password_confirmation
+              properties:
+                entity:
+                  type: string
+                  format: uuid
+                  description: the entity uuid
+                  example: 05a873e6-a3d3-4a36-baa0-2e3f3f56f21b
+                name:
+                  type: string
+                  description: the user name
+                  example: John Doe
+                email:
+                  type: string
+                  description: the user email
+                  example: john.doe@example.org
+                password:
+                  type: string
+                  description: the user password
+                  example: password
+                password_confirmation:
+                  type: string
+                  description: the user password again, for confirmation
+                  example: password
+                can_receive_emails:
+                  type: boolean
+                  description: if user allow to receive emails (true by default)
+                  example: true
+      tags:
+        - usermgmt
+      summary: Create user
+      responses:
+        200:
+          description: the created user object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        401:
+          $ref: '#/components/responses/401'
+        500:
+          $ref: '#/components/responses/500'
+  /user/{user}:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/useruuid'
+      tags:
+        - usermgmt
+      summary: get specific user by user uuid
+      responses:
+        200:
+          description: the requested user object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        401:
+          $ref: '#/components/responses/401'
+        500:
+          $ref: '#/components/responses/500'
+    put:
+      parameters:
+        - $ref: '#/components/parameters/useruuid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                entity:
+                  type: string
+                  format: uuid
+                  description: the entity uuid
+                  example: 05a873e6-a3d3-4a36-baa0-2e3f3f56f21b
+                name:
+                  type: string
+                  description: the user name
+                  example: John Doe
+                email:
+                  type: string
+                  description: the user email
+                  example: john.doe@example.org
+                password:
+                  type: string
+                  description: the user password
+                  example: password
+                password_confirmation:
+                  type: string
+                  description: the user password again, for confirmation
+                  example: password
+                can_receive_emails:
+                  type: boolean
+                  description: if user allow to receive emails (true by default)
+                  example: true
+                sectors:
+                  type: array
+                  description: the sector user
+                  items:
+                    type: string
+                    example: "n2spt"
+                tags:
+                  type: array
+                  description: the user tags
+                  items:
+                    type: string
+                  example:
+                    - foo
+            examples:
+              update name:
+                value:
+                  name: John new name
+              update email:
+                value:
+                  email: john.doe.new@example.org
+              update entity:
+                value:
+                  entity: 17eeb2d7-9cb8-4818-b01e-a79afec0c363
+              update password:
+                value:
+                  password: newpassword
+                  password_confirmation: newpassword
+              update roles:
+                value:
+                  roles: ["RO", "BILLING"]
+              update can receive emails:
+                value:
+                  can_receive_emails: false
+              update sectors:
+                value:
+                  sectors: ["n2spt"]
+      tags:
+        - usermgmt
+      summary: Update an user
+      responses:
+        200:
+          description: the updated user object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        401:
+          $ref: '#/components/responses/401'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+    delete:
+      parameters:
+        - $ref: '#/components/parameters/useruuid'
+      tags:
+        - usermgmt
+      summary: delete an user
+      responses:
+        200:
+          description: the user was deleted with success
+        401:
+          $ref: '#/components/responses/401'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+  /user/{user}/restore:
+    post:
+      parameters:
+        - $ref: '#/components/parameters/useruuid'
+      tags:
+        - usermgmt
+      summary: restore a deleted user
+      responses:
+        200:
+          description: the user was restored with success
+        401:
+          $ref: '#/components/responses/401'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+
+  /kb/article:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/search'
+        - $ref: '#/components/parameters/filterByVote'
+        - $ref: '#/components/parameters/filterBySave'
+        - $ref: '#/components/parameters/createdBy'
+        - $ref: '#/components/parameters/articleCategories'
+      tags:
+        - articles
+      summary: Get KB Articles
+      responses:
+        200:
+          description: List of KB article inside data array
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/articleList'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+    post:
+      requestBody:
+        $ref: '#/components/requestBodies/article'
+      tags:
+        - articles
+      summary: Create new article
+      responses:
+        201:
+          description: The Article that was created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/article'
+        422:
+          $ref: '#/components/responses/422'
+        500:
+          $ref: '#/components/responses/500'
+
+  /kb/article/{slug}:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/slug'
+      tags:
+        - articles
+      summary: Get KB article by slug
+      responses:
+        200:
+          description: Returns a KB Article item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/article'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+    put:
+      parameters:
+        - $ref: '#/components/parameters/slug'
+      requestBody:
+        $ref: '#/components/requestBodies/article'
+      tags:
+        - articles
+      summary: Update the kb article
+      responses:
+        201:
+          description: The article  that was updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/article'
+        422:
+          $ref: '#/components/responses/422'
+        500:
+          $ref: '#/components/responses/500'
+
+    delete:
+      parameters:
+        - $ref: '#/components/parameters/slug'
+      tags:
+        - articles
+      summary: Delete specific article by specified slug
+      responses:
+        200:
+          description: The article was deleted
+        403:
+          $ref: '#/components/responses/403'
+        422:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+
+  /kb/article/{slug}/save:
+    post:
+      parameters:
+        - $ref: '#/components/parameters/slug'
+      tags:
+        - articles
+      summary: mark as saved the article
+      responses:
+        201:
+          description: The Article that was marked as saved on the backend
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/save'
+        422:
+          $ref: '#/components/responses/422'
+        500:
+          $ref: '#/components/responses/500'
+
+    delete:
+      parameters:
+        - $ref: '#/components/parameters/slug'
+      tags:
+        - articles
+      summary: Delete the save article register by specified article slug
+      responses:
+        200:
+          description: The article save was deleted
+        403:
+          $ref: '#/components/responses/403'
+        422:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+
+
+  /kb/article/{slug}/vote:
+    post:
+      requestBody:
+        $ref: '#/components/requestBodies/articleVote'
+      parameters:
+        - $ref: '#/components/parameters/slug'
+      tags:
+        - articles
+      summary: mark as voted the article
+      responses:
+        201:
+          description: The Article that was marked as voted on the backend
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/vote'
+        422:
+          $ref: '#/components/responses/422'
+        500:
+          $ref: '#/components/responses/500'
+
+    delete:
+      parameters:
+        - $ref: '#/components/parameters/slug'
+      tags:
+        - articles
+      summary: Delete the vote article register by specified article slug
+      responses:
+        200:
+          description: The article vote was deleted
+        403:
+          $ref: '#/components/responses/403'
+        422:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+
+  /kb/attachment:
+    post:
+      requestBody:
+        $ref: '#/components/requestBodies/articleAttachment'
+      tags:
+        - articles
+      summary: Save a new file
+      responses:
+        201:
+          description: The Article that was saved on the backend
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/postAttachmentResponse'
+        422:
+          $ref: '#/components/responses/422'
+        500:
+          $ref: '#/components/responses/500'
+
+  /kb/attachment/{uuid}:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/uuid'
+      tags:
+        - articles
+      summary: Get KB article attachment by uuid
+      responses:
+        200:
+          description: Returns a kb attachment file
+          content:
+            image/png:
+              schema:
+                $ref: '#/components/schemas/kbAttachment'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+
+
+  /kb/category:
+    get:
+      tags:
+        - articles
+      summary: Get KB categories
+      responses:
+        200:
+          description: List of KB Categories inside data array
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/kbCategoryList'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+    post:
+      requestBody:
+        $ref: '#/components/requestBodies/kbCategory'
+      tags:
+        - articles
+      summary: create a new KB Category
+      responses:
+        201:
+          description: The KB Category was created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/kbCategory'
+        422:
+          $ref: '#/components/responses/422'
+        500:
+          $ref: '#/components/responses/500'
+
+  /kb/category/{slug}:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/slug'
+      tags:
+        - articles
+      summary: Get KB category
+      responses:
+        200:
+          description: get Kb Category by Slug
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/kbCategory'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+    put:
+      parameters:
+        - $ref: '#/components/parameters/slug'
+      requestBody:
+        $ref: '#/components/requestBodies/kbCategory'
+      tags:
+        - articles
+      summary: Update the KB Category
+      responses:
+        201:
+          description: The KB Category that was updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/kbCategory'
+        422:
+          $ref: '#/components/responses/422'
+        500:
+          $ref: '#/components/responses/500'
+
+    delete:
+      parameters:
+        - $ref: '#/components/parameters/slug'
+      tags:
+        - articles
+      summary: Delete the kb category by specified category slug
+      responses:
+        200:
+          description: The kb category was deleted
+        403:
+          $ref: '#/components/responses/403'
+        422:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+
+  /kb/saves:
+    get:
+      tags:
+        - articles
+      summary: Get KB article saves
+      responses:
+        200:
+          description: List of KB article saves inside data array
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/saveList'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+
+  /kb/votes:
+    get:
+      tags:
+        - articles
+      summary: Get KB article votes
+      responses:
+        200:
+          description: List of KB article votes inside data array
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/voteList'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+
+components:
+
+  parameters:
+
+    inactive:
+      name: inactive
+      description: Filter byinactive (1 = filter applied)
+      in: query
+      required: false
+      schema:
+        type: number
+        format: nullable
+        enum: [1]
+
+    trashed:
+      name: trashed
+      description: Show trashed/deleted items
+      in: query
+      required: false
+      schema:
+        type: boolean
+
+    tags:
+      name: tags
+      description: tags, per comma
+      in: query
+      required: false
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+          example: foo
+
+    created_at_start:
+      name: created_at_start
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/datetime'
+
+    created_at_end:
+      name: created_at_end
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/datetime'
+
+    created_by:
+      name: created_by
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/uuid'
+
+    updated_at_start:
+      name: updated_at_start
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/datetime'
+
+    updated_at_end:
+      name: updated_at_end
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/datetime'
+
+    limit:
+      name: perPage
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/integers'
+    page:
+      name: page
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/integers'
+    slug:
+      name: slug
+      description: Item slug
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/slug'
+    search:
+      name: search
+      description: Search query
+      in: query
+      required: false
+      schema:
+        type: string
+    useruuid:
+      name: user
+      description: User UUID
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/uuid'
+    uuid:
+      name: uuid
+      description: Item UUID
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/uuid'
+    createdBy:
+      name: createdby
+      description: user UUID
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/uuid'
+    creation_date:
+      name: creation_date
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/date'
+    start_at:
+      name: start_at
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/datetime'
+    start_at_required:
+      name: start_at
+      in: query
+      required: true
+      schema:
+        $ref: '#/components/schemas/datetime'
+    end_at:
+      name: end_at
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/datetime'
+    end_at_required:
+      name: end_at
+      in: query
+      required: true
+      schema:
+        $ref: '#/components/schemas/datetime'
+    filterByVote:
+      name: filterByVote
+      description: Filter by user votes
+      in: query
+      required: false
+      schema:
+        type: boolean
+    filterBySave:
+      name: filterBySave
+      description: Filter by user saves
+      in: query
+      required: false
+      schema:
+        type: boolean
+    articleCategories:
+      name: categories
+      description: Filter by category's slug
+      in: query
+      required: false
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+
+
+  requestBodies:
+    kbCategory:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                type: string
+                description: "name of the category"
+                example: "Linux Concepts"
+              category_parent:
+                type: string
+                description: "slug of the target category that must be the parent"
+                example: "linux_general"
+
+    articleVote:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - vote
+            properties:
+              vote:
+                type: boolean
+                description: "the vote could be true or false"
+
+    articleAttachment:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: name of the file
+                example: "file.png"
+              content:
+                type: string
+                description: content of the file encoded on base64
+                example: "/9j/4AAQSkZJRgABAQEBLAEsAAD//gATQ3JlYXRlZCB3aXRoIEdJTVD/4gKwSUNDX1BST0ZJTEUAAQEAAAKgbGNtcwRAAABtbnRyUkdCIFhZWiAH5wACAAcAFAAMAAZhY3NwQVBQTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWxjbXMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA1kZXNjAAABIAAAAEBjcHJ0AAABYAAAADZ3dHB0AAABmAAAABRjaGFkAAABrAAAACxyWFlaAAAB2AAAABRiWFlaAAAB7AAAABRnWFlaAAACAAAAABRyVFJDAAACFAAAACBnVFJDAAACFAAAACBiVFJDAAACFAAAACBjaHJtAAACNAAAACRkbW5kAAACWAAAACRkbWRkAAACfAAAACRtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACQAAAAcAEcASQBNAFAAIABiAHUAaQBsAHQALQBpAG4AIABzAFIARwBCbWx1YwAAAAAAAAABAAAADGVuVVMAAAAaAAAAHABQAHUAYgBsAGkAYwAgAEQAbwBtAGEAaQBuAABYWVogAAAAAAAA9tYAAQAAAADTLXNmMzIAAAAAAAEMQgAABd7///MlAAAHkwAA/ZD///uh///9ogAAA9wAAMBuWFlaIAAAAAAAAG+gAAA49QAAA5BYWVogAAAAAAAAJJ8AAA+EAAC2xFhZWiAAAAAAAABilwAAt4cAABjZcGFyYQAAAAAAAwAAAAJmZgAA8qcAAA1ZAAAT0AAACltjaHJtAAAAAAADAAAAAKPXAABUfAAATM0AAJmaAAAmZwAAD1xtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAEcASQBNAFBtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEL/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wgARCAABAAEDAREAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQBAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhADEAAAAX8P/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABBQJ//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPwF//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPwF//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQAGPwJ//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPyF//9oADAMBAAIAAwAAABAf/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPxB//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPxB//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxB//9k="
+    article:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: the name of the article
+                example: "Comandos básico do Linux"
+              content:
+                type: string
+                description: the content of the article
+                example: "1.  REDIRECIONAMENTO [Comandos básicos de GNU e UNIX](comandos-basicos-de-gnu-e-unix-wikilink)"
+              is_private:
+                type: boolean
+                description: define if the article is private
+                example: true
+
+    userList:
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/user'
+      description: List of user object
+      required: true
+
+  schemas:
+    # generics
+    uuid:
+      description: Unique identifier
+      type: string
+      format: uuid
+      example: 49890610-0d1d-44c6-a17d-a2583d420a69
+
+    slug:
+      description: item slug
+      type: string
+
+    title:
+      type: string
+
+    integers:
+      type: integer
+
+    string:
+      type: string
+
+    date:
+      type: string
+      format: date
+      #example: '2023-10-30'
+
+    datetime:
+      type: string
+      format: date-time
+      #example: '2023-10-30T18:00:00Z'
+
+    # specific IDs
+    created_at:
+      type: string
+      example: 2022-11-25T12:51:48.000000Z
+      readOnly: true
+    updated_at:
+      type: string
+      example: 2022-11-25T12:51:48.000000Z
+      readOnly: true
+
+    created_by:
+      oneOf:
+        - $ref: '#/components/schemas/user'
+      format: nullable
+      readOnly: true
+
+    updated_by:
+      oneOf:
+        - $ref: '#/components/schemas/user'
+      format: nullable
+      readOnly: true
+
+    assigneeFullList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/user'
+        meta:
+          $ref: '#/components/schemas/meta'
+
+    menuItem:
+      type: object
+      properties:
+          name:
+            type: string
+            example: Dashboard
+          link:
+            type: string
+            example: "/"
+          icon:
+            type: string
+            example: "fa-gauge"
+
+    menuItemWithChildren:
+      type: object
+      properties:
+          name:
+            type: string
+            example: Foo
+          link:
+            type: string
+            example: "/foo"
+          icon:
+            type: string
+            example: "fa-foo"
+          children:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Bar
+                link:
+                  type: string
+                  example: "/foo/bar"
+                icon:
+                  type: string
+                  example: "fa-bar"
+
+    menuList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            anyOf:
+              - $ref: '#/components/schemas/menuItem'
+              - $ref: '#/components/schemas/menuItemWithChildren'
+        meta:
+          type: object
+          properties:
+            version:
+              type: string
+              example: "1.1.0"
+    user:
+      type: object
+      properties:
+        uuid:
+          $ref: '#/components/schemas/uuid'
+        name:
+          type: string
+          example: Cassidy Waters
+        email:
+          type: string
+          example: jbarrows@example.org
+        tags:
+          $ref: '#/components/schemas/tags'
+
+    userList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/user'
+        meta:
+          $ref: '#/components/schemas/meta'
+
+    article:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/kbCategory'
+          description: Categories related to the article
+        content:
+          type: string
+          description: Content of the article
+          example: "1.  REDIRECIONAMENTO [Comandos básicos de GNU e UNIX](comandos-basicos-de-gnu-e-unix-wikilink)"
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: "2023-04-25T20:48:23.000000Z"
+        created_by:
+          type: object
+          description: Creator details
+          properties:
+            uuid:
+              type: string
+              example: "8c4ce837-45f0-4314-8c29-af24ffc3b8ab"
+            name:
+              type: string
+              example: "(Suporte)"
+            email:
+              type: string
+              example: "suporte@wiki.com.br"
+            level:
+              type: integer
+              example: 700
+        email:
+          type: string
+          description: Creator email
+          example: "suporte@wiki.com.br"
+        level:
+          type: integer
+          description: Creator level
+          example: 700
+        name:
+          type: string
+          description: Article name
+          example: "Comandos básico do linux"
+        uuid:
+          type: string
+          description: Unique identifier
+          example: "8c4ce837-45f0-4314-8c29-af24ffc3b8ab"
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Deletion timestamp
+          example: null
+        deleted_by:
+          type: object
+          nullable: true
+          description: Deleter details (if deleted)
+          properties:
+            uuid:
+              type: string
+              example: "8c4ce837-45f0-4314-8c29-af24ffc3b8ab"
+            name:
+              type: string
+              example: "(Suporte)"
+            email:
+              type: string
+              example: "suporte@wiki.com.br"
+            level:
+              type: integer
+              example: 700
+        is_private:
+          type: boolean
+          description: Whether the article is private
+          example: true
+        save:
+          type: boolean
+          description: Save flag
+          example: false
+        slug:
+          type: string
+          description: URL-friendly article name
+          example: "comandos-basico-do-linux"
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: "2023-04-25T20:48:23.000000Z"
+        updated_by:
+          type: object
+          description: Updater details
+          properties:
+            uuid:
+              type: string
+              example: "8c4ce837-45f0-4314-8c29-af24ffc3b8ab"
+            name:
+              type: string
+              example: "(Suporte)"
+            email:
+              type: string
+              example: "suporte@wiki.com.br"
+            level:
+              type: integer
+              example: 700
+        user_vote:
+          type: array
+          items:
+            $ref: '#/components/schemas/user'
+          description: User votes related to the article
+          example: []
+        votes:
+          type: integer
+          description: Total number of votes
+          example: 0
+
+    articleList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+              $ref: '#/components/schemas/article'
+        meta:
+          $ref: '#/components/schemas/meta'
+
+    kbAttachment:
+      type: string
+      format: binary
+      description: kb attachment file
+      example: "/9j/4AAQSkZJRgABAQEBLAEsAAD//gATQ3JlYXRlZCB3aXRoIEdJTVD/4gKwSUNDX1BST0ZJTEUAAQEAAAKgbGNtcwRAAABtbnRyUkdCIFhZWiAH5wACAAcAFAAMAAZhY3NwQVBQTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWxjbXMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA1kZXNjAAABIAAAAEBjcHJ0AAABYAAAADZ3dHB0AAABmAAAABRjaGFkAAABrAAAACxyWFlaAAAB2AAAABRiWFlaAAAB7AAAABRnWFlaAAACAAAAABRyVFJDAAACFAAAACBnVFJDAAACFAAAACBiVFJDAAACFAAAACBjaHJtAAACNAAAACRkbW5kAAACWAAAACRkbWRkAAACfAAAACRtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACQAAAAcAEcASQBNAFAAIABiAHUAaQBsAHQALQBpAG4AIABzAFIARwBCbWx1YwAAAAAAAAABAAAADGVuVVMAAAAaAAAAHABQAHUAYgBsAGkAYwAgAEQAbwBtAGEAaQBuAABYWVogAAAAAAAA9tYAAQAAAADTLXNmMzIAAAAAAAEMQgAABd7///MlAAAHkwAA/ZD///uh///9ogAAA9wAAMBuWFlaIAAAAAAAAG+gAAA49QAAA5BYWVogAAAAAAAAJJ8AAA+EAAC2xFhZWiAAAAAAAABilwAAt4cAABjZcGFyYQAAAAAAAwAAAAJmZgAA8qcAAA1ZAAAT0AAACltjaHJtAAAAAAADAAAAAKPXAABUfAAATM0AAJmaAAAmZwAAD1xtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAEcASQBNAFBtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEL/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wgARCAABAAEDAREAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQBAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhADEAAAAX8P/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABBQJ//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPwF//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPwF//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQAGPwJ//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPyF//9oADAMBAAIAAwAAABAf/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPxB//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPxB//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxB//9k="
+
+    postAttachmentResponse:
+      type: string
+      description: markdown notation to find the uploaded image
+      example: "![file.png](/kb/attachment/2228sk-238923829-283923)"
+
+    save:
+      type: object
+      description: article  save details
+      properties:
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-09-09T15:59:54.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-09-09T15:59:54.000000Z"
+        user:
+          type: object
+          properties:
+            uuid:
+              type: string
+              example: "ee83eb53-26ef-48f8-9c77-51a31dced32f"
+            name:
+              type: string
+              example: "Admin User for Testing"
+            email:
+              type: string
+              format: email
+              example: "admin@testing.local"
+            level:
+              type: integer
+              example: 1000
+            roles:
+              type: array
+              items:
+                type: string
+              nullable: true
+            preferences:
+              type: object
+              properties:
+                theme:
+                  type: string
+                  example: "default"
+            phones:
+              type: array
+              items:
+                type: string
+              nullable: true
+            sprite:
+              type: string
+              nullable: true
+            authcode_at:
+              type: string
+              format: date-time
+              nullable: true
+            cs_contact_preference:
+              type: string
+              nullable: true
+            companies:
+              type: array
+              items:
+                type: object
+                properties:
+                  uuid:
+                    type: string
+                    example: "498b5f78-0850-4801-9416-5a748e51a067"
+                  name:
+                    type: string
+                    example: "WIKI"
+                  opdc_id:
+                    type: string
+                    nullable: true
+                  fantasy_name:
+                    type: string
+                    nullable: true
+                  alias:
+                    type: string
+                    example: "OPDC"
+                  entity:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        uuid:
+                          type: string
+                          example: "602a0bdc-b0ea-41d6-8f29-16cdc0a343de"
+                        name:
+                          type: string
+                          example: "WIKI"
+                        alias:
+                          type: string
+                          example: "OPDC"
+                        obs:
+                          type: string
+                          example: "OPDC Entity"
+                  seller:
+                    type: string
+                    nullable: true
+                  csresp:
+                    type: string
+                    nullable: true
+            entity:
+              type: object
+              properties:
+                uuid:
+                  type: string
+                  example: "602a0bdc-b0ea-41d6-8f29-16cdc0a343de"
+                name:
+                  type: string
+                  example: "WIKI"
+                alias:
+                  type: string
+                  example: "OPDC"
+                obs:
+                  type: string
+                  example: "OPDC Entity"
+            sectors:
+              type: array
+              items:
+                type: object
+                properties:
+                  sector:
+                    type: object
+                    properties:
+                      uuid:
+                        type: string
+                        example: "e308becb-615b-4166-a0b8-062d720995ad"
+                      name:
+                        type: string
+                        example: "N3 Suporte"
+                      slug:
+                        type: string
+                        example: "n3spt"
+        article:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "Abuse"
+              slug:
+                type: string
+                example: "abuse"
+              content:
+                type: string
+                example: "# Abuse\n\nDocumentação que auxilia nas tratativas de abusos recebidos..."
+              is_private:
+                type: boolean
+                example: true
+              created_by:
+                type: object
+                properties:
+                  uuid:
+                    type: string
+                    example: "8c4ce837-45f0-4314-8c29-af24ffc3b8ab"
+                  name:
+                    type: string
+                    example: "(Suporte)"
+                  email:
+                    type: string
+                    format: email
+                    example: "suporte@wiki.com.br"
+                  level:
+                    type: integer
+                    example: 700
+              updated_by:
+                type: object
+                properties:
+                  uuid:
+                    type: string
+                    example: "8c4ce837-45f0-4314-8c29-af24ffc3b8ab"
+                  name:
+                    type: string
+                    example: "(Suporte)"
+                  email:
+                    type: string
+                    format: email
+                    example: "suporte@wiki.com.br"
+                  level:
+                    type: integer
+                    example: 700
+              deleted_by:
+                type: string
+                nullable: true
+              created_at:
+                type: string
+                format: date-time
+                example: "2024-06-26T19:42:05.000000Z"
+              updated_at:
+                type: string
+                format: date-time
+                example: "2024-06-26T19:42:05.000000Z"
+              deleted_at:
+                type: string
+                nullable: true
+              categories:
+                type: array
+                items:
+                  type: string
+                nullable: true
+
+    saveList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+              $ref: '#/components/schemas/save'
+        meta:
+          $ref: '#/components/schemas/meta'
+
+    vote:
+      type: object
+      properties:
+        vote:
+            type: boolean
+            description: User's vote status
+            example: true
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of vote creation
+          example: "2024-09-09T16:00:02.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp of the last update to the vote
+          example: "2024-09-09T16:00:02.000000Z"
+        article:
+          type: object
+          description: Details of the related article
+          properties:
+            name:
+              type: string
+              description: Name of the article
+              example: "1"
+            slug:
+              type: string
+              description: Slug for the article
+              example: "1"
+            content:
+              type: string
+              description: Content of the article
+              example: "Caso de erro na conexão do agente de backup com o servidor:\n\n1º copiar o arquivo C:\\\\Program Files\\\\BackupClient\\\\RegisterAgentTool\\\\register_agent.exe para a área de trabalho\n\n2º criar um arquivo bat com o seguinte conteúdo:\n\nregister_agent.exe -o register -t cloud -a <https://cloud.acronis.com>\n-u <nome do usuário> -p <senha>\npause\n\n3º execute o script e aguarde a mensagem de successful"
+            is_private:
+              type: boolean
+              description: Whether the article is private
+              example: true
+            created_by:
+              type: object
+              description: Information about who created the article
+              properties:
+                uuid:
+                  type: string
+                  description: UUID of the creator
+                  example: "8c4ce837-45f0-4314-8c29-af24ffc3b8ab"
+                name:
+                  type: string
+                  description: Name of the creator
+                  example: "(Suporte)"
+                email:
+                  type: string
+                  description: Email of the creator
+                  example: "suporte@wiki.com.br"
+                level:
+                  type: integer
+                  description: Creator's level
+                  example: 700
+            updated_by:
+              type: object
+              description: Information about who last updated the article
+              properties:
+                uuid:
+                  type: string
+                  description: UUID of the updater
+                  example: "8c4ce837-45f0-4314-8c29-af24ffc3b8ab"
+                name:
+                  type: string
+                  description: Name of the updater
+                  example: "(Suporte)"
+                email:
+                  type: string
+                  description: Email of the updater
+                  example: "suporte@wiki.com.br"
+                level:
+                  type: integer
+                  description: Updater's level
+                  example: 700
+            deleted_by:
+              type: string
+              nullable: true
+              description: Information about who deleted the article, if applicable
+              example: null
+            created_at:
+              type: string
+              format: date-time
+              description: Article creation timestamp
+              example: "2019-10-04T20:55:53.000000Z"
+            updated_at:
+              type: string
+              format: date-time
+              description: Article last updated timestamp
+              example: "2019-10-04T20:55:53.000000Z"
+            deleted_at:
+              type: string
+              format: date-time
+              nullable: true
+              description: Article deletion timestamp, if applicable
+              example: null
+            categories:
+              type: array
+              description: List of article categories
+              items:
+                type: string
+              example: []
+    voteList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+              $ref: '#/components/schemas/vote'
+        meta:
+          $ref: '#/components/schemas/meta'
+    kbCategory:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the article
+          example: "Acesso Remoto (RDP)"
+        slug:
+          type: string
+          description: Slug for the article
+          example: "acesso-remoto-rdp"
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp of the article
+          example: "2024-09-09T13:26:11.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp of the article
+          example: "2024-09-09T13:26:16.000000Z"
+        parent:
+          type: object
+          nullable: true
+          description: Parent category of the article, if any
+          properties:
+            name:
+              type: string
+              description: Name of the parent article
+              example: "Windows"
+            slug:
+              type: string
+              description: Slug of the parent article
+              example: "windows"
+            created_at:
+              type: string
+              format: date-time
+              description: Creation timestamp of the parent article
+              example: "2024-09-09T13:26:16.000000Z"
+            updated_at:
+              type: string
+              format: date-time
+              description: Last update timestamp of the parent article
+              example: "2024-09-09T13:26:16.000000Z"
+            parent:
+              type: object
+              nullable: true
+              description: Parent of the parent article, if any
+              example: null
+    kbCategoryList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/kbCategory'
+        meta:
+          $ref: '#/components/schemas/meta'
+    meta:
+      type: object
+      properties:
+        current_page:
+          type: integer
+          format: int32
+          example: 1
+        from:
+          type: integer
+          format: nullable
+          example: 1
+        last_page:
+          type: integer
+          format: int32
+          example: 1
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                format: nullable
+              label:
+                type: string
+                example: '&laquo; Previous'
+              active:
+                type: boolean
+        path:
+          type: string
+          example: https://app.wiki.example/api/ticket
+        per_page:
+          type: integer
+          format: int32
+          example: 15
+        to:
+          type: integer
+          format: nullable
+        total:
+          type: integer
+          format: int32
+          example: 1
+
+    error422:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          description: A human readable error message
+          type: string
+          example: 'The title field is required.'
+        errors:
+          description: Object contained all errors
+          type: object
+          properties:
+            title:
+              type: array
+              items:
+                type: string
+                example: 'The title field is required.'
+
+    error400:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          description: A human readable error message
+          type: string
+          example: "Bad Request"
+
+    error401:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          description: A human readable error message
+          type: string
+          example: "Unauthorized"
+
+    error403:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          description: A human readable error message
+          type: string
+          example: "Forbidden"
+
+    error404:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          description: A human readable error message
+          type: string
+          example: "Record not found"
+
+    error500:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          description: A human readable error message
+          type: string
+          example: "Internal error"
+
+  responses:
+      400:
+        description: Bad Request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/error400'
+      401:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/error401'
+      403:
+        description: Forbidden
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/error403'
+      422:
+        description: Unprocessable Entity
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/error422'
+      404:
+        description: Item not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/error404'
+      500:
+        description: Unexpected error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/error500'
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+

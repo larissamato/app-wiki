@@ -1,4 +1,6 @@
 *
-!private/
+!version.json
+!discovery/
+!ticket-attachments/
 !public/
 !.gitignore

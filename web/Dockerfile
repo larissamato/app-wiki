@@ -1,10 +1,8 @@
-FROM node:20-alpine
+# nginx stable version = 1.24
+FROM nginx:stable
 
-WORKDIR /app
+COPY .docker/nginx/nginx.conf /etc/nginx
 
-COPY . .
+COPY .docker/nginx/conf.d/default.conf /etc/nginx/conf.d
 
-RUN npm install
-
-EXPOSE 3000
-CMD ["npm", "run", "dev"]
+COPY dist /usr/share/nginx/html

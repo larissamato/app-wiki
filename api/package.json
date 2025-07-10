@@ -1,17 +1,25 @@
 {
-    "$schema": "https://json.schemastore.org/package.json",
-    "private": true,
-    "type": "module",
-    "scripts": {
-        "build": "vite build",
-        "dev": "vite"
-    },
-    "devDependencies": {
-        "@tailwindcss/vite": "^4.0.0",
-        "axios": "^1.8.2",
-        "concurrently": "^9.0.1",
-        "laravel-vite-plugin": "^1.2.0",
-        "tailwindcss": "^4.0.0",
-        "vite": "^6.2.4"
-    }
+  "standard": {
+    "allowImplicit": false,
+    "ignore": [
+      "**/Styles/Global.js",
+      "**/Cypress/**",
+      "**/*.cy.js",
+      "**/*.config.js"
+    ]
+  },
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "standard && node my-tests.js"
+  },
+  "devDependencies": {
+    "laravel-vite-plugin": "^0.6.0",
+    "@vitejs/plugin-react": "^2.0.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "vite": "^3.0.0",
+    "swagger-ui-react": "^4.15.5"
+  }
 }

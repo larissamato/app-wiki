@@ -1,80 +1,126 @@
-import { Container, ActionButton as SActionButton } from "./style";
-import { Typography, Space } from "antd";
-import Icon from "@common/Icon";
-import { useUser } from "@contexts/UserContext";
-import { useNavigate } from "react-router-dom";
-import { useTheme } from "styled-components";
-import { api } from "@helpers/api";
+import { Dispatch, SetStateAction } from 'react'
+import { Container, ActionsGroup, ActionButton as SActionButton } from './style'
+import { Button, Avatar } from 'antd'
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
+import Icon from '@common/Icon'
+import { useTranslation } from 'react-i18next'
+import useWindowResize from '@hooks/useWindowResize'
+import { useUser } from '@contexts/UserContext'
+import useModal from '@hooks/useModal'
+import { IUser } from '@/types/IUser'
+import Settings from '@components/Layout/Settings'
+import { api } from '@helpers/api'
+import { ModalContext } from '@contexts/ModalContext'
 
-const { Title } = Typography;
 interface ActionButtonProps {
-  action: () => void;
-  icon: string;
-  name?: string;
-  util: string;
+  action: () => void
+  icon: string
+  name?: string
+  util: string
 }
 
-const ActionButton = ({ action, icon }: ActionButtonProps) => (
-  <SActionButton onClick={action}>
+interface HeaderProps {
+  collapsed: boolean
+  setCollapsed: Dispatch<SetStateAction<boolean>>
+  width: number
+}
+
+const ActionButton = ({ action, icon, util }: ActionButtonProps) => (
+  <SActionButton onClick={action} data-cy={`actions-${util}`}>
     <Icon color="gray" name={`fa-light ${icon}`} size="30px" />
   </SActionButton>
-);
+)
+
+const CollapseButton = ({ collapsed, setCollapsed, width }: HeaderProps) => (
+  <Button
+    data-cy="header-collapse-button"
+    type="text"
+    style={
+      width < 720 ? { position: 'absolute', left: 20, top: 25 } : undefined
+    }
+    icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+    onClick={() => setCollapsed(!collapsed)}
+  />
+)
 
 const putTheme = (theme: string) => {
-  localStorage.setItem("theme", theme);
-};
+  api.put('/session/user/theme', { theme })
+  localStorage.setItem('theme', theme)
+}
 
+const SettingsButton = ({ user }: { user: IUser }) => {
+  const { width } = useWindowResize()
+  const { open, onCancel, onOpen, onClose } = useModal()
+  return (
+    <ModalContext.Provider value={{ onOpen, onCancel, open, onClose }}>
+      <SActionButton data-cy="actions-config" onClick={onOpen}>
+        {width > 720 ? user.name : ''}
+        {user.avatar ? (
+          <Avatar
+            style={{
+              backgroundColor: '#2277ae',
+              width: '30px',
+              height: '30px'
+            }}
+            src={<img src={`data:image/png;base64,${user.avatar}`} />}
+          />
+        ) : (
+          <Icon color="gray" name="fa-light fa-gear" size="30px" />
+        )}
+      </SActionButton>
+      <Settings open={open} onCancel={onCancel} />
+    </ModalContext.Provider>
+  )
+}
 const LogoutButton = () => {
-  const navigate = useNavigate();
-  const { setIsThemeDark, setIsLogged, user } = useUser();
-
-  const logout = () => {
-    api.post("/leave", { username: user?.name });
-    setIsThemeDark(false);
-    setIsLogged(false);
-    navigate("/");
-    localStorage.clear();
-  };
+  const { width } = useWindowResize()
+  const { t } = useTranslation()
 
   return (
-    <SActionButton onClick={logout}>
-      <Icon
-        color="gray"
-        name="fa-light fa-arrow-right-from-bracket"
-        data-cy="actions-logout"
-        size="30px"
-      />
-    </SActionButton>
-  );
-};
+    <a href="/logout">
+      <SActionButton>
+        <Icon
+          color="gray"
+          name="fa-light fa-arrow-right-from-bracket"
+          data-cy="actions-logout"
+          size="30px"
+        />
+        {width > 720 ? t('LOGOUT') : ''}
+      </SActionButton>
+    </a>
+  )
+}
 
 const useHeader = () => {
-  const { isThemeDark, setIsThemeDark, user, setIsLogged } = useUser();
+  const { isThemeDark, setIsThemeDark, user, setIsLogged } = useUser()
   const changeTheme = () => {
-    setIsThemeDark(!isThemeDark);
+    setIsThemeDark(!isThemeDark)
     if (!isThemeDark) {
-      putTheme("dark");
-      return;
+      putTheme('dark')
+      return
     }
-    putTheme("default");
-  };
+    putTheme('default')
+  }
 
   const arr = [
     {
       action: changeTheme,
-      icon: ` fa-lightbulb${!isThemeDark ? "-on" : ""} `,
-      util: "switch",
-    },
-  ];
-  return { arr, user, setIsLogged };
-};
-const Header = () => {
-  const { arr } = useHeader();
-  const theme = useTheme();
+      icon: ` fa-lightbulb${!isThemeDark ? '-on' : ''} `,
+      util: 'switch'
+    }
+  ]
+  return { arr, user, setIsLogged }
+}
+const Header = ({ setCollapsed, collapsed, width }: HeaderProps) => {
+  const { arr, user } = useHeader()
   return (
-    <Container style={{ backgroundColor: theme.md }}>
-      <Title style={{ marginLeft: "20px" }}>Chat</Title>
-      <Space>
+    <Container>
+      <CollapseButton
+        setCollapsed={setCollapsed}
+        collapsed={collapsed}
+        width={width}
+      />
+      <ActionsGroup>
         {arr.map((e, index) => (
           <ActionButton
             key={`${e.util}_${index}`}
@@ -83,10 +129,11 @@ const Header = () => {
             icon={e.icon}
           />
         ))}
+        <SettingsButton user={user} />
         <LogoutButton />
-      </Space>
+      </ActionsGroup>
     </Container>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

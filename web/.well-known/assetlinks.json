@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "center.opendata.app",
+      "sha256_cert_fingerprints": [
+        "F7:45:22:7E:37:C5:8C:66:B7:47:8F:D3:01:F1:B1:56:E9:BB:50:F7:F0:DA:30:B5:C9:E2:6F:AB:BC:BD:88:3B"
+      ]
+    }
+  }
+]

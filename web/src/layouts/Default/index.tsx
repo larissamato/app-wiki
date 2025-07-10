@@ -1,36 +1,51 @@
-import { useState } from "react";
-import { Outlet } from "react-router-dom";
-import { Layout, Typography, Divider } from "antd";
-import useWindowResize from "@hooks/useWindowResize";
-import { useTheme } from "styled-components";
-import MessageProvider from "@contexts/MessageContext";
-import Header from "@components/Layout/Header";
-const { Content } = Layout;
+import { useEffect, useState } from 'react'
+import { Outlet } from 'react-router-dom'
+import { Layout } from 'antd'
+import Navbar from '@components/Layout/Navbar'
+import useWindowResize from '@hooks/useWindowResize'
+import Header from '@components/Layout/Header'
+import { useTheme } from 'styled-components'
+import MessageProvider from '@contexts/MessageContext'
+
+const { Content } = Layout
 const Default = () => {
-  const { width } = useWindowResize();
-  const [collapsed, setCollapsed] = useState(true);
-  const theme = useTheme();
+  const { width } = useWindowResize()
+  const [collapsed, setCollapsed] = useState(false)
+  const theme = useTheme()
+  const marginValue = collapsed ? 80 : 200
+
+  useEffect(() => {
+    if (width < 720) {
+      setCollapsed(true)
+    }
+  }, [])
+
   return (
     <MessageProvider>
       <Layout
-        style={{
-          backgroundColor: theme.background,
-          minHeight: "100vh",
-          width: "100vw",
-        }}
+        style={{ backgroundColor: theme.background, minHeight: '100vh' }}
       >
-        <Content
-          style={{
-            backgroundColor: theme.background,
-            marginLeft: width > 720 ? 80 : 0,
-          }}
+        <Navbar collapsed={collapsed} setCollapsed={setCollapsed} />
+        <Layout
+          style={{ padding: '16px', backgroundColor: theme.background }}
         >
-          <Header />
-          <Outlet />
-        </Content>
+          <Content
+            style={{
+              backgroundColor: theme.background,
+              marginLeft: width > 720 ? marginValue : 0
+            }}
+          >
+            <Header
+              setCollapsed={setCollapsed}
+              collapsed={collapsed}
+              width={width}
+            />
+            <Outlet />
+          </Content>
+        </Layout>
       </Layout>
     </MessageProvider>
-  );
-};
+  )
+}
 
-export default Default;
+export default Default

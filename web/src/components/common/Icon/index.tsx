@@ -1,13 +1,13 @@
-import { useTheme } from "styled-components";
+import { useTheme } from 'styled-components'
 
 interface IconProps {
-  name: string;
-  size?: number | string;
-  color?: string;
+  name: string
+  size?: number | string
+  color?: string
 }
 
 const Icon = ({ name, size, color, ...props }: IconProps) => {
-  const theme = useTheme();
+  const theme: ThemeProps = useTheme()
 
   return (
     <i
@@ -15,7 +15,7 @@ const Icon = ({ name, size, color, ...props }: IconProps) => {
       className={name}
       style={{ fontSize: size || 14, color: theme[color] || theme.icons }}
     />
-  );
-};
+  )
+}
 
-export default Icon;
+export default Icon

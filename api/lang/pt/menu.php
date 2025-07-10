@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'Autofill'        => 'Autofill',
+    'Dashboard'       => 'Dashboard',
+    'Tickets'         => 'Chamados',
+    'Ticket services' => 'Serviços',
+    'Alerts'          => 'Alertas',
+    'Backups'         => 'Backups',
+    'HR'              => 'RH',
+    'Users'           => 'Usuários',
+    'Quotes'          => 'Cotações',
+    'Billing'         => 'Financeiro',
+    'Contacts'        => 'Atendimento',
+    'Customers'       => 'Clientes',
+    'Servers'         => 'Servidores',
+    'Sectors'         => 'Setores',
+    'Status problems' => 'Status Geral',
+    'Tiers'           => 'Níveis',
+    'Articles'        => 'Artigos',
+    'Categories'      => 'Categorias',
+    'Receipts'        => 'Extratos',
+    'HR'              => 'RH',
+    'Ranking'         => 'Ranking',
+];

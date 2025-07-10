@@ -1,0 +1,42 @@
+{
+    "data": [
+        {
+            "name": "Users",
+            "link": "/users",
+            "icon": "fa-building",
+            "perm": {
+                "level": {
+                    "min": 900,
+                    "max": 1000
+                }
+            }
+        },
+        {
+            "name": "Articles",
+            "link": "/articles",
+            "icon": "fa-newspaper",
+            "perm": {
+                "level": {
+                    "min": 1,
+                    "max": 1000
+                }
+            },
+            "children": [
+                {
+                    "name": "Categories",
+                    "link": "/articles/categories",
+                    "icon": "fa-list",
+                    "perm": {
+                        "level": {
+                            "min": 950,
+                            "max": 1000
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "meta": {
+        "version": "1.1.1"
+    }
+}
