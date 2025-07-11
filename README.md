@@ -1,5 +1,5 @@
 # Sistema de Base de Conhecimento Empresarial
-Este projeto é um sistema abrangente de base de conhecimento, projetado para otimizar o autoatendimento de clientes e a gestão de informações para equipes de suporte. Ele oferece um repositório centralizado para artigos, guias e soluções, melhorando a eficiência operacional e a satisfação do cliente.
+Este projeto de faculdade de criação de um sistema abrangente de base de conhecimento, projetado para otimizar o autoatendimento de clientes e a gestão de informações para equipes de suporte. Ele oferece um repositório centralizado para artigos, guias e soluções, melhorando a eficiência operacional e a satisfação do cliente.
 
 ### ⚙️ Tecnologias Utilizadas
 Este projeto é construído com uma arquitetura moderna e utiliza as seguintes tecnologias:
