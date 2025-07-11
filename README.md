@@ -55,6 +55,7 @@ cp .env.example .env
 - Iniciar o backend:
 ```bash
 cd api
+composer install
 docker-compose up -d --build
 docker-compose exec app php artisan migrate:fresh && docker-compose exec app php artisan db:seed --class TestingAppWebSeeder
 ```
@@ -75,4 +76,9 @@ cd web
 npm install
 npm run dev
 ```
-O frontend estará disponível no endereço local [http://localhost:5173/](http://localhost:5174/)
+O frontend estará disponível no endereço local [http://localhost:5173/](http://localhost:5173/) ou [http://localhost:5174/](http://localhost:5174/)
+
+### 🔒 Acessos
+O usuário admin -> admin@testing.local
+O usuário comum -> customer@testing.local
+Senha de ambos -> password
